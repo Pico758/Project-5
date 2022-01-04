@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html ng-app="myApp">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>custom attribute directive that prevents user from typing any non numerical value this should be validated at
+        every keypress</title>
+    <script src="https://code.angularjs.org/1.4.9/angular.js"></script>
+    <script src="../myApplication/script.js"></script>
+    <script src="../myApplication/number.js"></script>
+</head>
+
+<body ng-controller="MainCtrl">
+    <p>input value is: {{name}}</p>
+    <input type="text" ng-model="name" number />
+</body>
+<script>
+    var app = angular.module('myApp', ['number']);
+
+    app.controller('MainCtrl', function ($scope) {
+        $scope.name = '';
+    });
+    angular.module('number', [])
+        .directive('number', function () {
+            return {
+                require: 'ngModel',
+                restrict: 'A',
+                link: function (scope, element, attrs, ctrl) {
+                    ctrl.$parsers.push(function (input) {
+                        if (input == undefined) return ''
+                        var inputNumber = input.toString().replace(/[^0-9]/g, '');
+                        if (inputNumber != input) {
+                            ctrl.$setViewValue(inputNumber);
+                            ctrl.$render();
+                        }
+                        return inputNumber;
+                    });
+                }
+            };
+        });
+</script>
+
+</html>
