@@ -29,7 +29,31 @@
                 link: function (scope, element, attrs, ctrl) {
                     ctrl.$parsers.push(function (input) {
                         if (input == undefined) return ''
-                        var inputNumber = input.toString().replace(/[^0-9]/g, '');
+                        var inputNumber = input.replace(/[^-][^0-9.]/g, '');
+                        // Now to prevent duplicates of decimal point
+                        var arr = inputNumber.split('');
+
+                        count = 0; //decimal counter
+                        for (var i = 0; i < arr.length; i++) {
+                            if (arr[i] == '.') {
+                                count++; //  how many do we have? increment
+                            }
+                        }
+
+                        // if we have more than 1 decimal point, delete and leave only one at the end
+                        while (count > 1) {
+                            for (var i = 0; i < arr.length; i++) {
+                                if (arr[i] == '.') {
+                                    arr[i] = '';
+                                    count = 0;
+                                    break;
+                                }
+                            }
+                        }
+                        inputNumber = arr.toString().replace(/,/g, '');
+
+
+
                         if (inputNumber != input) {
                             ctrl.$setViewValue(inputNumber);
                             ctrl.$render();
